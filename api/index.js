@@ -7,40 +7,47 @@ import postRoutes from './routes/post.route.js';
 import commentRoutes from './routes/comment.route.js';
 import cookieParser from 'cookie-parser';
 import path from 'path';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
 
-dotenv.config();
+// Setup __dirname untuk ESM
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
+// Load .env dari folder root proyek
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
+
+// Koneksi ke MongoDB
 mongoose
   .connect(process.env.MONGO)
   .then(() => {
-    console.log('MongoDb is connected');
+    console.log('MongoDB is connected');
   })
   .catch((err) => {
-    console.log(err);
+    console.error('MongoDB connection error:', err);
   });
-
-const __dirname = path.resolve();
 
 const app = express();
 
+// Middleware
 app.use(express.json());
 app.use(cookieParser());
 
-app.listen(3000, () => {
-  console.log('Server is running on port 3000!');
-});
-
+// API Routes
 app.use('/api/user', userRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/post', postRoutes);
 app.use('/api/comment', commentRoutes);
 
-app.use(express.static(path.join(__dirname, '/client/dist')));
+// Static Files (Vite / React / Client)
+app.use(express.static(path.join(__dirname, '../client/dist')));
 
+// Serve index.html untuk route lainnya (SPA fallback)
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'client', 'dist', 'index.html'));
+  res.sendFile(path.join(__dirname, '../client', 'dist', 'index.html'));
 });
 
+// Error Handler
 app.use((err, req, res, next) => {
   const statusCode = err.statusCode || 500;
   const message = err.message || 'Internal Server Error';
@@ -49,4 +56,10 @@ app.use((err, req, res, next) => {
     statusCode,
     message,
   });
+});
+
+// Start Server
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });

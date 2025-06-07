@@ -1,0 +1,21 @@
+{
+  "name": "api",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "bcryptjs": "file:...",
+    "cookie-parser": "...",
+    "dotenv": "file:...",
+    "express": "file:...",
+    "jsonwebtoken": "...",
+    "mongoose": "..."
+  },
+  "description": "",
+  "main": "index.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
